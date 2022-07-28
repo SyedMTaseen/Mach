@@ -1,0 +1,27 @@
+---
+APITESTING:
+  NAME: UserDetails
+  CURLRequest: "curl --location --request GET \"https://api.test.com/api/user/{{UUID}}/Details\" "
+  TestCases:
+  - Name : Basic testing
+    Request :
+      Params :
+        - UUID: 4a52adee-ee22-41dc-b947-59c938e4cb3b
+      Body : "{}"
+      Header :
+        - Auth : 4d52edea-ee22-41dc-b947-59c948e4cb3b
+    Responces :
+      StatusCode: 200
+      Body:
+        IsArray: true
+        ArrayLenght : 
+            Equal : 1
+        ArrayContains:
+          IsObject: true 
+          InObject:
+          - UserAge :
+              Equal : 18
+              InRange : [18,25] 
+              ShouldExist : true
+          ObjectLenght:
+            Equal : 1   
