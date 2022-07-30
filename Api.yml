@@ -17,8 +17,10 @@ APITESTING:
         ListLenght : 
             Equal : 1
         Contains:
-        - UserName : "BOB"
-          Email : "BOB@email.com"
+        - UserName : 
+            Equal: "BOB"
+          Email : 
+            Equal: "BOB@email.com"
           UserDetails: 
             Contains :   
               IsObject: true 
