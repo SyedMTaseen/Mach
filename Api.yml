@@ -16,7 +16,7 @@ APITESTING:
         IsList: true
         ListLenght : 
             Equal : 1
-        Contains:
+        InList:
         - UserName : 
             Equal: "BOB"
           Email : 
@@ -34,5 +34,4 @@ APITESTING:
                 PhoneList :
                   Contains :
                     IsList : true     
-              ObjectLenght:
-                Equal : 1   
+           
