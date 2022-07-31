@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -60,13 +61,26 @@ func main() {
 			}
 		}
 
+		url := "https://test.api/api/users"
+
+		payload := strings.NewReader("name=test&jab=teacher")
+
+		req, _ := http.NewRequest("POST", url, payload)
+
+		req.Header.Add("content-type", "application/x-www-form-urlencoded")
+		req.Header.Add("cache-control", "no-cache")
+
+		res, _ := http.DefaultClient.Do(req)
+
+		defer res.Body.Close()
+		body, _ := ioutil.ReadAll(res.Body)
+
+		fmt.Println(string(body))
 		//reader := strings.NewReader(`{"body":123}`)
-		request, err := http.NewRequest("GET", RequestURL.(string), nil)
-		// TODO: check err
-		fmt.Print(err)
-		client := &http.Client{}
-		resp, err := client.Do(request)
-		fmt.Println(resp)
+		// curl := exec.Command("curl", "-l", "-X", "https://api.test.io/?name=bella")
+		// output, e := curl.Output()
+		// fmt.Println(output)
+		// fmt.Println(e)
 
 	}
 	//fmt.Print(testcase.(map[string]interface{})["Name"])
