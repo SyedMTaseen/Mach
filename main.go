@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -58,6 +59,7 @@ func performMach(t map[interface{}]interface{}) {
 
 		responce := RESTRequest(Request, HTTPmethods, url, Body)
 		//fmt.Print(RequestURL)
+		fmt.Println(responce.([]interface{})[0].(map[string]interface{})["city"])
 		fmt.Println(responce)
 
 	}
@@ -110,7 +112,7 @@ func addHeader(Request interface{}, req *http.Request) *http.Request {
 	return req
 }
 
-func RESTRequest(Request interface{}, HTTPmethods string, url string, Body *bytes.Buffer) string {
+func RESTRequest(Request interface{}, HTTPmethods string, url string, Body *bytes.Buffer) interface{} {
 	var req *http.Request
 	if Body == nil {
 		reqnullbody, _ := http.NewRequest(HTTPmethods, url, nil)
@@ -123,9 +125,15 @@ func RESTRequest(Request interface{}, HTTPmethods string, url string, Body *byte
 	req = addHeader(Request, req)
 	res, _ := http.DefaultClient.Do(req)
 
-	fmt.Print(res.Status)
+	fmt.Println(res.Status)
 	defer res.Body.Close()
 	resbody, _ := ioutil.ReadAll(res.Body)
 
-	return string(resbody)
+	var responce interface{}
+	err := json.Unmarshal(resbody, &responce)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return responce
 }
