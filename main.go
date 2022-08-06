@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -62,8 +63,11 @@ func performMach(t map[interface{}]interface{}) {
 		respObj := ResponcetoObject(responce)
 		//fmt.Print(RequestURL)
 		fmt.Println(responce.StatusCode)
-		fmt.Println(respObj.([]interface{})[0].(map[string]interface{})["city"])
-		//fmt.Println(respObj)
+		// vars, err := respObj.(map[string]interface{})["city"]
+		// if err == true {
+		// 	fmt.Print("error")
+		// }
+		fmt.Println(reflect.TypeOf(respObj))
 
 	}
 
