@@ -1,16 +1,18 @@
 
 APITESTING:
   Name: UserDetails
-  RequestURL: "https://api.agify.io/?name=bella\""
-  HTTP-methods: GET
+  RequestURL: "https://mocki.io/v1/d4867d8b-b5d5-4a48-a4ab-79131b5809b8"
+  HTTP-method: GET
   TestCases:
   - Name : Basic testing
     Request :
       Params :
-        - name: bela
-      # Body : "{}"
+      #   - USERGUID: 1DCAA319-F303-41AB-8EE8-30A9FBFACFC4
+          # PageNo : 1
+      # Body : '{"Email":"taseen@test.com","Password":"9f8974712c8488dde75e90ff4c18b141d73cd42e5286dbcbd3a9e8617897a3beba67668188edeb4438df6add06b9c361ff29175f48c9e3189d8a9812d7686b80"}'
       # Header :
-      #   - Auth : 4d52edea-ee22-41dc-b947-59c948e4cb3b
+      #   - SofyAuth : 67935C5B-A009-4DC8-9EC6-2F8E9D58E6DC
+      #     Content-Type : application/json
     Responces :
       StatusCode: 200
       Body:
