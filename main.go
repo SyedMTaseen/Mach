@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -11,103 +12,120 @@ import (
 
 func main() {
 	// test.read yml
+
+	buf := readFile()
+	//Map the read file[interface {}]interface {}Map to
+	t := mapYmltoInterface(buf)
+
+	performMach(t)
+}
+
+func readFile() []byte {
 	buf, err := ioutil.ReadFile("Apitest.yml")
 	if err != nil {
 		fmt.Print("error: Failed to read the file\n")
-		return
+		return nil
 	}
+	return buf
+}
 
-	//Map the read file[interface {}]interface {}Map to
+func mapYmltoInterface(buf []byte) map[interface{}]interface{} {
 	t := make(map[interface{}]interface{})
-	err = yaml.Unmarshal(buf, &t)
+	err := yaml.Unmarshal(buf, &t)
 	if err != nil {
 		panic(err)
 	}
+	return t
+}
+
+func performMach(t map[interface{}]interface{}) {
 
 	fmt.Print(t["APITESTING"].(map[string]interface{})["Name"]) // Name
 	fmt.Print("\n")
 	RequestURL := t["APITESTING"].(map[string]interface{})["RequestURL"]
-	fmt.Print(RequestURL)
-	fmt.Print("\n")
-	//fmt.Print(t["APITESTING"].(map[string]interface{})["TestCases"].([]interface{})[0])
-
+	HTTPmethods := t["APITESTING"].(map[string]interface{})["HTTP-method"].(string)
 	testcases := t["APITESTING"].(map[string]interface{})["TestCases"].([]interface{})
 	testcasesLen := len(testcases)
-	fmt.Print(testcasesLen)
-	fmt.Print("\n")
-
 	for i := 0; i < testcasesLen; i++ {
 		testcase := testcases[i]
 		Name := testcase.(map[string]interface{})["Name"]
 		fmt.Println(Name)
 		Request := testcase.(map[string]interface{})["Request"]
-
-		Params := Request.(map[string]interface{})["Params"]
-
-		parms := Params.([]interface{})[0]
-		for key, value := range parms.(map[string]interface{}) {
-			fmt.Println(key, value)
-		}
-
-		Body := Request.(map[string]interface{})["Body"]
+		url := addParams(RequestURL.(string), Request)
+		fmt.Println(url)
+		Body := getBody(Request)
 		fmt.Println(Body)
 
-		Header := Request.(map[string]interface{})["Header"]
-
-		if Header != nil {
-			header := Header.([]interface{})[0]
-			for key, value := range header.(map[string]interface{}) {
-				fmt.Println(key, value)
-			}
-		}
-
-		url := "https://test.api/api/users"
-
-		payload := strings.NewReader("name=test&jab=teacher")
-
-		req, _ := http.NewRequest("POST", url, payload)
-
-		req.Header.Add("content-type", "application/x-www-form-urlencoded")
-		req.Header.Add("cache-control", "no-cache")
-
-		res, _ := http.DefaultClient.Do(req)
-
-		defer res.Body.Close()
-		body, _ := ioutil.ReadAll(res.Body)
-
-		fmt.Println(string(body))
-		//reader := strings.NewReader(`{"body":123}`)
-		// curl := exec.Command("curl", "-l", "-X", "https://api.test.io/?name=bella")
-		// output, e := curl.Output()
-		// fmt.Println(output)
-		// fmt.Println(e)
+		responce := RESTRequest(Request, HTTPmethods, url, Body)
+		//fmt.Print(RequestURL)
+		fmt.Println(responce)
 
 	}
-	//fmt.Print(testcase.(map[string]interface{})["Name"])
-	// t["secound"]To(map[interface {}]interface {})Type conversion with
-	// fmt.Print(t["secound"].(map[string]interface{})["a1"]) //count1
-	// fmt.Print("\n")
 
-	// len()Returns the number of elements in the array
-	// 	fmt.Print(len(t["secound"].(map[string]interface{})))
-	// 	fmt.Print("\n")
+	//fmt.Print(RequestURL)
 
-	// 	// []interface {}Array of types
-	// 	fmt.Print(t["secound"].(map[string]interface{})["a2"].([]interface{})[0]) // count2
-	// 	fmt.Print("\n")
+}
 
-	// 	fmt.Print(t["secound"].(map[string]interface{})["a3"].(map[string]interface{})["b1"]) // count4
-	// 	fmt.Print("\n")
+func addParams(RequestUrl string, Request interface{}) string {
 
-	// 	//If it is named regularly, you can check how many there are
-	// 	flag, i := 0, 0
-	// 	for flag == 0 {
-	// 		i++
-	// 		switch t["secound"].(map[string]interface{})["a"+strconv.Itoa(i)].(type) {
-	// 		case nil:
-	// 			flag = 1
-	// 		}
-	// 	}
-	// 	fmt.Printf("a%d is not found\n", i) // a4 is not found
+	Params := Request.(map[string]interface{})["Params"]
+	if Params == nil {
+		return RequestUrl
+	}
+	parms := Params.([]interface{})[0]
+	requestUrl := RequestUrl
+	endprams := ""
+	for key, value := range parms.(map[string]interface{}) {
+		if strings.Contains(requestUrl, "{{"+key+"}}") {
+			requestUrl = strings.ReplaceAll(requestUrl, "{{"+key+"}}", value.(string))
+		} else {
+			endprams += key + "=" + value.(string)
+		}
+		//fmt.Println(key, value)
+	}
+	if endprams != "" {
+		requestUrl += "?" + endprams
+	}
+	return requestUrl
+}
 
+func getBody(Request interface{}) *bytes.Buffer {
+	Body := Request.(map[string]interface{})["Body"]
+	if Body == nil {
+		return nil
+	}
+	in := []byte(Body.(string))
+	return bytes.NewBuffer(in)
+}
+
+func addHeader(Request interface{}, req *http.Request) *http.Request {
+	Header := Request.(map[string]interface{})["Header"]
+	if Header != nil {
+		header := Header.([]interface{})[0]
+		for key, value := range header.(map[string]interface{}) {
+			req.Header.Add(key, value.(string))
+			//fmt.Println(key, value)
+		}
+	}
+	return req
+}
+
+func RESTRequest(Request interface{}, HTTPmethods string, url string, Body *bytes.Buffer) string {
+	var req *http.Request
+	if Body == nil {
+		reqnullbody, _ := http.NewRequest(HTTPmethods, url, nil)
+		req = reqnullbody
+	} else {
+		reqwithbody, _ := http.NewRequest(HTTPmethods, url, Body)
+		req = reqwithbody
+	}
+
+	req = addHeader(Request, req)
+	res, _ := http.DefaultClient.Do(req)
+
+	fmt.Print(res.Status)
+	defer res.Body.Close()
+	resbody, _ := ioutil.ReadAll(res.Body)
+
+	return string(resbody)
 }
