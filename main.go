@@ -58,9 +58,12 @@ func performMach(t map[interface{}]interface{}) {
 		fmt.Println(Body)
 
 		responce := RESTRequest(Request, HTTPmethods, url, Body)
+
+		respObj := ResponcetoObject(responce)
 		//fmt.Print(RequestURL)
-		fmt.Println(responce.([]interface{})[0].(map[string]interface{})["city"])
-		fmt.Println(responce)
+		fmt.Println(responce.StatusCode)
+		fmt.Println(respObj.([]interface{})[0].(map[string]interface{})["city"])
+		//fmt.Println(respObj)
 
 	}
 
@@ -112,7 +115,7 @@ func addHeader(Request interface{}, req *http.Request) *http.Request {
 	return req
 }
 
-func RESTRequest(Request interface{}, HTTPmethods string, url string, Body *bytes.Buffer) interface{} {
+func RESTRequest(Request interface{}, HTTPmethods string, url string, Body *bytes.Buffer) *http.Response {
 	var req *http.Request
 	if Body == nil {
 		reqnullbody, _ := http.NewRequest(HTTPmethods, url, nil)
@@ -125,15 +128,19 @@ func RESTRequest(Request interface{}, HTTPmethods string, url string, Body *byte
 	req = addHeader(Request, req)
 	res, _ := http.DefaultClient.Do(req)
 
-	fmt.Println(res.Status)
-	defer res.Body.Close()
-	resbody, _ := ioutil.ReadAll(res.Body)
+	return res
+}
 
-	var responce interface{}
-	err := json.Unmarshal(resbody, &responce)
+func ResponcetoObject(resp *http.Response) interface{} {
+
+	// fmt.Println(res.Status)
+	defer resp.Body.Close()
+	resbody, _ := ioutil.ReadAll(resp.Body)
+
+	var responceObj interface{}
+	err := json.Unmarshal(resbody, &responceObj)
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	return responce
+	return responceObj
 }
