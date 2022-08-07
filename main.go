@@ -20,6 +20,7 @@ func main() {
 	t := mapYmltoInterface(buf)
 
 	performMach(t)
+
 }
 
 func readFile() []byte {
@@ -45,34 +46,40 @@ func performMach(t map[interface{}]interface{}) {
 	fmt.Print(t["APITESTING"].(map[string]interface{})["Name"]) // Name
 	fmt.Print("\n")
 	RequestURL := t["APITESTING"].(map[string]interface{})["RequestURL"]
+	fmt.Println(RequestURL)
 	HTTPmethods := t["APITESTING"].(map[string]interface{})["HTTP-method"].(string)
+	fmt.Println(HTTPmethods)
 	testcases := t["APITESTING"].(map[string]interface{})["TestCases"].([]interface{})
 	testcasesLen := len(testcases)
 	for i := 0; i < testcasesLen; i++ {
 		testcase := testcases[i]
 		Name := testcase.(map[string]interface{})["Name"]
 		fmt.Println(Name)
-		Request := testcase.(map[string]interface{})["Request"]
-		url := addParams(RequestURL.(string), Request)
-		fmt.Println(url)
-		Body := getBody(Request)
-		fmt.Println(Body)
-
-		responce := RESTRequest(Request, HTTPmethods, url, Body)
-
-		respObj := ResponcetoObject(responce)
-		//fmt.Print(RequestURL)
-		fmt.Println(responce.StatusCode)
-		// vars, err := respObj.(map[string]interface{})["city"]
-		// if err == true {
-		// 	fmt.Print("error")
-		// }
-		fmt.Println(reflect.TypeOf(respObj))
+		request(testcase, RequestURL, HTTPmethods)
 
 	}
 
 	//fmt.Print(RequestURL)
 
+}
+
+func request(testcase interface{}, RequestURL interface{}, HTTPmethods string) {
+	Request := testcase.(map[string]interface{})["Request"]
+	url := addParams(RequestURL.(string), Request)
+	fmt.Println(url)
+	Body := getBody(Request)
+	fmt.Println(Body)
+
+	responce := RESTRequest(Request, HTTPmethods, url, Body)
+
+	respObj := ResponcetoObject(responce)
+	//fmt.Print(RequestURL)
+	fmt.Println(responce.StatusCode)
+	// vars, err := respObj.(map[string]interface{})["city"]
+	// if err == true {
+	// 	fmt.Print("error")
+	// }
+	fmt.Println(reflect.TypeOf(respObj))
 }
 
 func addParams(RequestUrl string, Request interface{}) string {
