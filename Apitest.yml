@@ -20,11 +20,9 @@ APITESTING:
           Lenght : 
               Equal : 1
           InType:
-          - UserName : 
-              Equal: "BOB"
-            Email : 
-              Equal: "BOB@email.com"
-            UserDetails: 
+          - 0 : BOB
+            1 : BOB@email.com
+            2 : 
               Contains :   
                 Type: Object 
                 Lenght:

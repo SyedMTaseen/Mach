@@ -1,9 +1,9 @@
 package main
 
 import (
-	"Mach/pkg"
 	"fmt"
 	"io/ioutil"
+	"reflect"
 
 	"gopkg.in/yaml.v3"
 )
@@ -51,7 +51,9 @@ func performMach(t map[interface{}]interface{}) {
 		testcase := testcases[i]
 		Name := testcase.(map[string]interface{})["Name"]
 		fmt.Println(Name)
-		pkg.Request(testcase, RequestURL, HTTPmethods)
+
+		ResponceMain(testcase)
+		//pkg.Request(testcase, RequestURL, HTTPmethods)
 		//Responces := testcase.(map[string]interface{})["Responces"]
 		// fmt.Println(Responces)
 
@@ -59,4 +61,64 @@ func performMach(t map[interface{}]interface{}) {
 
 	//fmt.Print(RequestURL)
 
+}
+
+func ResponceMain(testcase interface{}) {
+
+	Responces := testcase.(map[string]interface{})["Responces"]
+	StatusCode := Responces.(map[string]interface{})["StatusCode"]
+	fmt.Println(StatusCode)
+	Body := Responces.(map[string]interface{})["Body"]
+	bodyContains(Body.(map[string]interface{})["Contains"])
+
+}
+
+func bodyContains(Contains interface{}) {
+
+	if Contains.(map[string]interface{})["Type"] == "List" {
+		list(Contains)
+	} else if Contains.(map[string]interface{})["Type"] == "Object" {
+		object()
+	} else {
+		fmt.Println("error: no body")
+	}
+
+}
+
+func list(Contains interface{}) {
+	Lenght := Contains.(map[string]interface{})["Lenght"]
+	if Lenght.(map[string]interface{})["Equal"] != nil {
+		Equal(Lenght)
+	}
+	InType := Contains.(map[string]interface{})["InType"]
+	if InType != nil {
+		listObj(InType)
+	}
+
+}
+
+func listObj(InType interface{}) {
+	intype := InType.([]interface{})[0]
+	//fmt.Println(intype)
+
+	for key, value := range intype.(map[interface{}]interface{}) {
+
+		switch value.(type) {
+		case map[string]interface{}:
+			fmt.Println(key, reflect.TypeOf(value))
+			bodyContains(value.(map[string]interface{})["Contains"])
+			//fmt.Println("Integer:", value.(map[string]interface{})["Contains"])
+		default:
+			fmt.Println(key, reflect.TypeOf(value))
+		}
+
+	}
+}
+
+func object() {
+	fmt.Println("obj")
+}
+
+func Equal(Lenght interface{}) {
+	fmt.Println(Lenght)
 }
