@@ -178,6 +178,8 @@ func objValue(InType interface{}, respObj interface{}) {
 		val := value.(map[string]interface{})["Contains"]
 		if val != nil {
 			bodyContains(value, obj)
+		} else {
+			objChecks(value, obj)
 		}
 
 	}
@@ -202,4 +204,12 @@ func ResponcetoObject(resp *http.Response) interface{} {
 		fmt.Println(err)
 	}
 	return responceObj
+}
+
+func objChecks(ymlval interface{}, resobj interface{}) {
+
+	val := ymlval.(map[string]interface{})["Equal"]
+	if val != nil {
+		Equal(val.(string), resobj.(string))
+	}
 }

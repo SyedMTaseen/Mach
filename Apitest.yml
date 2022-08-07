@@ -27,7 +27,7 @@ APITESTING:
                   Equal : 2 
                 InType:
                 - city :
-                    ShouldExist : true
+                    Equal : London
                   name :
-                    ShouldExist : true   
+                    Equal : Harry Potter   
            

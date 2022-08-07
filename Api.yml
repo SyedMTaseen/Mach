@@ -30,7 +30,6 @@ APITESTING:
                 - UserAge :
                     Equal : 18
                     InRange : [18,25] 
-                    ShouldExist : true
                   PhoneList :
                     Contains :
                       Type : List    
