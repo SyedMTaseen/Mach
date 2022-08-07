@@ -148,6 +148,7 @@ func listValue(InType interface{}, respObj interface{}) {
 			//fmt.Println("Integer:", value.(map[string]interface{})["Contains"])
 		default:
 			fmt.Println(key, reflect.TypeOf(value))
+			ListChecks(value, obj)
 		}
 
 	}
@@ -212,4 +213,10 @@ func objChecks(ymlval interface{}, resobj interface{}) {
 	if val != nil {
 		Equal(val.(string), resobj.(string))
 	}
+}
+
+func ListChecks(ymlval interface{}, resobj interface{}) {
+
+	Equal(ymlval.(string), resobj.(string))
+
 }
