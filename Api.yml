@@ -15,25 +15,23 @@ APITESTING:
       StatusCode: 200
       Body:
         Contains:
-          IsList: true
-          ListLenght : 
+          Type: List
+          Lenght : 
               Equal : 1
-          InList:
-          - UserName : 
-              Equal: "BOB"
-            Email : 
-              Equal: "BOB@email.com"
-            UserDetails: 
+          InType:
+          - 0 : BOB
+            1 : BOB@email.com
+            2 : 
               Contains :   
-                IsObject: true 
-                ObjectLenght:
+                Type: Object 
+                Lenght:
                   Equal : 1   
-                InObject:
+                InType:
                 - UserAge :
                     Equal : 18
                     InRange : [18,25] 
                     ShouldExist : true
                   PhoneList :
                     Contains :
-                      IsList : true     
+                      Type : List    
            

@@ -2,15 +2,12 @@ package pkg
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"reflect"
 	"strings"
 )
 
-func Request(testcase interface{}, RequestURL interface{}, HTTPmethods string) {
+func Request(testcase interface{}, RequestURL interface{}, HTTPmethods string) *http.Response {
 	Request := testcase.(map[string]interface{})["Request"]
 	url := AddParams(RequestURL.(string), Request)
 	fmt.Println(url)
@@ -19,14 +16,7 @@ func Request(testcase interface{}, RequestURL interface{}, HTTPmethods string) {
 
 	responce := RESTRequest(Request, HTTPmethods, url, Body)
 
-	respObj := ResponcetoObject(responce)
-	//fmt.Print(RequestURL)
-	fmt.Println(responce.StatusCode)
-	// vars, err := respObj.(map[string]interface{})["city"]
-	// if err == true {
-	// 	fmt.Print("error")
-	// }
-	fmt.Println(reflect.TypeOf(respObj))
+	return responce
 }
 
 func AddParams(RequestUrl string, Request interface{}) string {
@@ -87,18 +77,4 @@ func RESTRequest(Request interface{}, HTTPmethods string, url string, Body *byte
 	res, _ := http.DefaultClient.Do(req)
 
 	return res
-}
-
-func ResponcetoObject(resp *http.Response) interface{} {
-
-	// fmt.Println(res.Status)
-	defer resp.Body.Close()
-	resbody, _ := ioutil.ReadAll(resp.Body)
-
-	var responceObj interface{}
-	err := json.Unmarshal(resbody, &responceObj)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return responceObj
 }

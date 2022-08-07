@@ -1,8 +1,11 @@
 package main
 
 import (
+	"Mach/pkg"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"reflect"
 
 	"gopkg.in/yaml.v3"
@@ -52,8 +55,17 @@ func performMach(t map[interface{}]interface{}) {
 		Name := testcase.(map[string]interface{})["Name"]
 		fmt.Println(Name)
 
-		ResponceMain(testcase)
-		//pkg.Request(testcase, RequestURL, HTTPmethods)
+		responce := pkg.Request(testcase, RequestURL, HTTPmethods)
+		respObj := ResponcetoObject(responce)
+		//fmt.Print(RequestURL)
+		fmt.Println(responce.StatusCode)
+		// vars, err := respObj.(map[string]interface{})["city"]
+		// if err == true {
+		// 	fmt.Print("error")
+		// }
+		fmt.Println(respObj)
+		//ResponceMain(testcase)
+		//
 		//Responces := testcase.(map[string]interface{})["Responces"]
 		// fmt.Println(Responces)
 
@@ -146,4 +158,18 @@ func objValue(InType interface{}) {
 
 func Equal(Lenght interface{}) {
 	fmt.Println(Lenght)
+}
+
+func ResponcetoObject(resp *http.Response) interface{} {
+
+	// fmt.Println(res.Status)
+	defer resp.Body.Close()
+	resbody, _ := ioutil.ReadAll(resp.Body)
+
+	var responceObj interface{}
+	err := json.Unmarshal(resbody, &responceObj)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return responceObj
 }

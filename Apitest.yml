@@ -18,21 +18,16 @@ APITESTING:
         Contains:
           Type: List
           Lenght : 
-              Equal : 1
+              Equal : 3
           InType:
-          - 0 : BOB
-            1 : BOB@email.com
-            2 : 
+          - 0 : 
               Contains :   
                 Type: Object 
                 Lenght:
                   Equal : 1   
                 InType:
-                - UserAge :
-                    Equal : 18
-                    InRange : [18,25] 
+                - city :
                     ShouldExist : true
-                  PhoneList :
-                    Contains :
-                      Type : List    
+                  name :
+                    ShouldExist : true   
            
