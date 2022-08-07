@@ -78,7 +78,7 @@ func bodyContains(Contains interface{}) {
 	if Contains.(map[string]interface{})["Type"] == "List" {
 		list(Contains)
 	} else if Contains.(map[string]interface{})["Type"] == "Object" {
-		object()
+		object(Contains)
 	} else {
 		fmt.Println("error: no body")
 	}
@@ -92,12 +92,12 @@ func list(Contains interface{}) {
 	}
 	InType := Contains.(map[string]interface{})["InType"]
 	if InType != nil {
-		listObj(InType)
+		listValue(InType)
 	}
 
 }
 
-func listObj(InType interface{}) {
+func listValue(InType interface{}) {
 	intype := InType.([]interface{})[0]
 	//fmt.Println(intype)
 
@@ -115,8 +115,33 @@ func listObj(InType interface{}) {
 	}
 }
 
-func object() {
-	fmt.Println("obj")
+func object(Contains interface{}) {
+	Lenght := Contains.(map[string]interface{})["Lenght"]
+	if Lenght.(map[string]interface{})["Equal"] != nil {
+		Equal(Lenght)
+	}
+	InType := Contains.(map[string]interface{})["InType"]
+
+	//fmt.Println(InType)
+	if InType != nil {
+		objValue(InType)
+	}
+}
+
+func objValue(InType interface{}) {
+	intype := InType.([]interface{})[0]
+	//fmt.Println(intype)
+
+	for key, value := range intype.(map[string]interface{}) {
+
+		fmt.Println(key, reflect.TypeOf(value))
+
+		val := value.(map[string]interface{})["Contains"]
+		if val != nil {
+			bodyContains(value)
+		}
+
+	}
 }
 
 func Equal(Lenght interface{}) {
