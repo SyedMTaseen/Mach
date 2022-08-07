@@ -1,7 +1,7 @@
 ---
 APITESTING:
   NAME: UserDetails
-  RequestURL: "curl --location --request GET \"https://api.test.com/api/user/{{UUID}}/Details\" "
+  RequestURL: "https://api.test.com/api/user/{{UUID}}/Details"
   HTTP-method: GET
   TestCases:
   - Name : Basic testing
