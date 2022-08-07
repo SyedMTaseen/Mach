@@ -18,13 +18,13 @@ APITESTING:
         Contains:
           Type: List
           Lenght : 
-              Equal : 3
+              Equal : 4
           InType:
           - 0 : 
               Contains :   
                 Type: Object 
                 Lenght:
-                  Equal : 1   
+                  Equal : 2 
                 InType:
                 - city :
                     ShouldExist : true

@@ -56,15 +56,15 @@ func performMach(t map[interface{}]interface{}) {
 		fmt.Println(Name)
 
 		responce := pkg.Request(testcase, RequestURL, HTTPmethods)
-		respObj := ResponcetoObject(responce)
+
 		//fmt.Print(RequestURL)
 		fmt.Println(responce.StatusCode)
 		// vars, err := respObj.(map[string]interface{})["city"]
 		// if err == true {
 		// 	fmt.Print("error")
 		// }
-		fmt.Println(respObj)
-		//ResponceMain(testcase)
+
+		ResponceMain(testcase, responce)
 		//
 		//Responces := testcase.(map[string]interface{})["Responces"]
 		// fmt.Println(Responces)
@@ -75,50 +75,76 @@ func performMach(t map[interface{}]interface{}) {
 
 }
 
-func ResponceMain(testcase interface{}) {
+func ResponceMain(testcase interface{}, responce *http.Response) {
 
 	Responces := testcase.(map[string]interface{})["Responces"]
-	StatusCode := Responces.(map[string]interface{})["StatusCode"]
-	fmt.Println(StatusCode)
+	StatusCode := Responces.(map[string]interface{})["StatusCode"].(int)
+	checkStatusCode(StatusCode, responce.StatusCode)
 	Body := Responces.(map[string]interface{})["Body"]
-	bodyContains(Body.(map[string]interface{})["Contains"])
+	respObj := ResponcetoObject(responce)
+	fmt.Println(reflect.TypeOf(respObj.([]interface{})[0]))
+	bodyContains(Body.(map[string]interface{})["Contains"], respObj)
 
 }
 
-func bodyContains(Contains interface{}) {
+func checkStatusCode(statusCode int, responceStatusCode int) {
+	if statusCode == responceStatusCode {
+		fmt.Println("StaTusCode match")
+	} else {
+		fmt.Println("StaTusCode invalid")
+	}
+
+}
+
+func bodyContains(Contains interface{}, respObj interface{}) {
 
 	if Contains.(map[string]interface{})["Type"] == "List" {
-		list(Contains)
+
+		switch respObj.(type) {
+		case []interface{}:
+			fmt.Println("is list true")
+		default:
+			fmt.Println("is list false")
+		}
+
+		list(Contains, respObj)
 	} else if Contains.(map[string]interface{})["Type"] == "Object" {
-		object(Contains)
+		switch respObj.(type) {
+		case map[string]interface{}:
+			fmt.Println("is obj true")
+		default:
+			fmt.Println("is obj false")
+		}
+		object(Contains, respObj)
 	} else {
 		fmt.Println("error: no body")
 	}
 
 }
 
-func list(Contains interface{}) {
+func list(Contains interface{}, respObj interface{}) {
 	Lenght := Contains.(map[string]interface{})["Lenght"]
 	if Lenght.(map[string]interface{})["Equal"] != nil {
-		Equal(Lenght)
+		leng := Lenght.(map[string]interface{})["Equal"]
+		Equal(leng.(int), len(respObj.([]interface{})))
 	}
 	InType := Contains.(map[string]interface{})["InType"]
 	if InType != nil {
-		listValue(InType)
+		listValue(InType, respObj)
 	}
 
 }
 
-func listValue(InType interface{}) {
+func listValue(InType interface{}, respObj interface{}) {
 	intype := InType.([]interface{})[0]
 	//fmt.Println(intype)
 
 	for key, value := range intype.(map[interface{}]interface{}) {
-
+		obj := respObj.([]interface{})[key.(int)]
 		switch value.(type) {
 		case map[string]interface{}:
 			fmt.Println(key, reflect.TypeOf(value))
-			bodyContains(value.(map[string]interface{})["Contains"])
+			bodyContains(value.(map[string]interface{})["Contains"], obj)
 			//fmt.Println("Integer:", value.(map[string]interface{})["Contains"])
 		default:
 			fmt.Println(key, reflect.TypeOf(value))
@@ -127,37 +153,41 @@ func listValue(InType interface{}) {
 	}
 }
 
-func object(Contains interface{}) {
+func object(Contains interface{}, respObj interface{}) {
 	Lenght := Contains.(map[string]interface{})["Lenght"]
 	if Lenght.(map[string]interface{})["Equal"] != nil {
-		Equal(Lenght)
+		leng := Lenght.(map[string]interface{})["Equal"]
+		Equal(leng.(int), len(respObj.(map[string]interface{})))
 	}
 	InType := Contains.(map[string]interface{})["InType"]
 
 	//fmt.Println(InType)
 	if InType != nil {
-		objValue(InType)
+		objValue(InType, respObj)
 	}
 }
 
-func objValue(InType interface{}) {
+func objValue(InType interface{}, respObj interface{}) {
 	intype := InType.([]interface{})[0]
 	//fmt.Println(intype)
 
 	for key, value := range intype.(map[string]interface{}) {
-
-		fmt.Println(key, reflect.TypeOf(value))
+		obj := respObj.(map[string]interface{})[key]
+		fmt.Println(key, reflect.TypeOf(value), obj)
 
 		val := value.(map[string]interface{})["Contains"]
 		if val != nil {
-			bodyContains(value)
+			bodyContains(value, obj)
 		}
 
 	}
 }
 
-func Equal(Lenght interface{}) {
-	fmt.Println(Lenght)
+func Equal[T int | string](yml T, resp T) {
+	fmt.Println("equal", yml, resp)
+	if yml == resp {
+		fmt.Println("true")
+	}
 }
 
 func ResponcetoObject(resp *http.Response) interface{} {
