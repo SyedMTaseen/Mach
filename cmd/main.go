@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Mach/pkg/ReadFiles"
+	"Mach/pkg/readFiles"
 	"flag"
 	"fmt"
 	"os"
@@ -40,7 +40,7 @@ func HandleTest(getCmd *flag.FlagSet, path *string) {
 	}
 	if *path != "" {
 		path := *path
-		ReadFiles.ReadYml(path)
+		readFiles.ReadYml(path)
 		//fmt.Println(path)
 	}
 }

@@ -1,8 +1,8 @@
 package macher
 
 import (
-	"Mach/pkg/Request"
-	"Mach/pkg/Response"
+	"Mach/pkg/request"
+	"Mach/pkg/response"
 	"fmt"
 	"io/ioutil"
 	"strconv"
@@ -22,11 +22,11 @@ func PerformMach(t map[interface{}]interface{}) {
 		Name := testcase.(map[string]interface{})["Name"]
 		fmt.Print("Test case : " + Name.(string) + " ")
 
-		responce := Request.Request(testcase, RequestURL, HTTPmethods)
+		responce := request.Request(testcase, RequestURL, HTTPmethods)
 
 		//fmt.Println(responce.StatusCode)
 
-		result := Response.ResponceMain(testcase, responce)
+		result := response.ResponceMain(testcase, responce)
 
 		if result.Result {
 			fmt.Println("PASSED")

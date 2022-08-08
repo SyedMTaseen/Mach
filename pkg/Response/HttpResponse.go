@@ -1,7 +1,7 @@
-package Response
+package response
 
 import (
-	"Mach/pkg/Logger"
+	"Mach/pkg/logger"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -168,7 +168,7 @@ func ResponcetoObject(resp *http.Response) interface{} {
 	var responceObj interface{}
 	err := json.Unmarshal(resbody, &responceObj)
 	if err != nil {
-		Logger.ErrorLogger.Println(err)
+		logger.ErrorLogger.Println(err)
 	}
 	return responceObj
 }

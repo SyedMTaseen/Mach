@@ -1,7 +1,7 @@
-package ReadFiles
+package readFiles
 
 import (
-	"Mach/pkg/Logger"
+	"Mach/pkg/logger"
 	"Mach/pkg/macher"
 	"io/fs"
 	"io/ioutil"
@@ -22,7 +22,7 @@ func ReadYml(testCasesPath string) {
 func readFile(path string) []byte {
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {
-		Logger.ErrorLogger.Println("error: Failed to read the file\n" + ":" + err.Error())
+		logger.ErrorLogger.Println("error: Failed to read the file\n" + ":" + err.Error())
 		return nil
 	}
 	return buf
