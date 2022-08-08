@@ -11,6 +11,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Test us the result of Testcases
+type TestCaseTests struct {
+	Description string //Whats gone wrong
+	Result      bool   // Pass or fail
+}
+
 func main() {
 	// test.read yml
 
@@ -64,7 +70,9 @@ func performMach(t map[interface{}]interface{}) {
 		// 	fmt.Print("error")
 		// }
 
-		ResponceMain(testcase, responce)
+		result := ResponceMain(testcase, responce)
+
+		fmt.Println(result)
 		//
 		//Responces := testcase.(map[string]interface{})["Responces"]
 		// fmt.Println(Responces)
@@ -75,122 +83,148 @@ func performMach(t map[interface{}]interface{}) {
 
 }
 
-func ResponceMain(testcase interface{}, responce *http.Response) {
+func ResponceMain(testcase interface{}, responce *http.Response) bool {
 
+	result := true
 	Responces := testcase.(map[string]interface{})["Responces"]
 	StatusCode := Responces.(map[string]interface{})["StatusCode"].(int)
-	checkStatusCode(StatusCode, responce.StatusCode)
+	result = checkStatusCode(StatusCode, responce.StatusCode)
+	if result == false {
+		return false
+	}
 	Body := Responces.(map[string]interface{})["Body"]
 	respObj := ResponcetoObject(responce)
 	fmt.Println(reflect.TypeOf(respObj.([]interface{})[0]))
-	bodyContains(Body.(map[string]interface{})["Contains"], respObj)
+	return bodyContains(Body.(map[string]interface{})["Contains"], respObj)
 
 }
 
-func checkStatusCode(statusCode int, responceStatusCode int) {
+func checkStatusCode(statusCode int, responceStatusCode int) bool {
 	if statusCode == responceStatusCode {
-		fmt.Println("StaTusCode match")
+		return true
 	} else {
-		fmt.Println("StaTusCode invalid")
+		return false
 	}
 
 }
 
-func bodyContains(Contains interface{}, respObj interface{}) {
+func bodyContains(Contains interface{}, respObj interface{}) bool {
 
 	if Contains.(map[string]interface{})["Type"] == "List" {
 
 		switch respObj.(type) {
 		case []interface{}:
-			fmt.Println("is list true")
+			return list(Contains, respObj)
 		default:
-			fmt.Println("is list false")
+			return false
 		}
 
-		list(Contains, respObj)
 	} else if Contains.(map[string]interface{})["Type"] == "Object" {
 		switch respObj.(type) {
 		case map[string]interface{}:
-			fmt.Println("is obj true")
+			return object(Contains, respObj)
 		default:
-			fmt.Println("is obj false")
+			return false
 		}
-		object(Contains, respObj)
+
 	} else {
-		fmt.Println("error: no body")
+		return false
 	}
 
 }
 
-func list(Contains interface{}, respObj interface{}) {
+func list(Contains interface{}, respObj interface{}) bool {
 	Lenght := Contains.(map[string]interface{})["Lenght"]
 	if Lenght.(map[string]interface{})["Equal"] != nil {
 		leng := Lenght.(map[string]interface{})["Equal"]
-		Equal(leng.(int), len(respObj.([]interface{})))
+		if Equal(leng.(int), len(respObj.([]interface{}))) == false {
+			return false
+		}
 	}
 	InType := Contains.(map[string]interface{})["InType"]
 	if InType != nil {
-		listValue(InType, respObj)
+		return listValue(InType, respObj)
 	}
 
+	return true
 }
 
-func listValue(InType interface{}, respObj interface{}) {
+func listValue(InType interface{}, respObj interface{}) bool {
 	intype := InType.([]interface{})[0]
 	//fmt.Println(intype)
 
 	for key, value := range intype.(map[interface{}]interface{}) {
 		obj := respObj.([]interface{})[key.(int)]
+		if obj == nil {
+			return false
+		}
 		switch value.(type) {
 		case map[string]interface{}:
 			fmt.Println(key, reflect.TypeOf(value))
-			bodyContains(value.(map[string]interface{})["Contains"], obj)
+			if bodyContains(value.(map[string]interface{})["Contains"], obj) == false {
+				return false
+			}
 			//fmt.Println("Integer:", value.(map[string]interface{})["Contains"])
 		default:
 			fmt.Println(key, reflect.TypeOf(value))
-			ListChecks(value, obj)
+			if ListChecks(value, obj) == false {
+				return false
+			}
 		}
 
 	}
+	return true
 }
 
-func object(Contains interface{}, respObj interface{}) {
+func object(Contains interface{}, respObj interface{}) bool {
 	Lenght := Contains.(map[string]interface{})["Lenght"]
 	if Lenght.(map[string]interface{})["Equal"] != nil {
 		leng := Lenght.(map[string]interface{})["Equal"]
-		Equal(leng.(int), len(respObj.(map[string]interface{})))
+		if Equal(leng.(int), len(respObj.(map[string]interface{}))) == false {
+			return false
+		}
 	}
 	InType := Contains.(map[string]interface{})["InType"]
 
 	//fmt.Println(InType)
 	if InType != nil {
-		objValue(InType, respObj)
+		return objValue(InType, respObj)
 	}
+	return true
 }
 
-func objValue(InType interface{}, respObj interface{}) {
+func objValue(InType interface{}, respObj interface{}) bool {
 	intype := InType.([]interface{})[0]
 	//fmt.Println(intype)
 
 	for key, value := range intype.(map[string]interface{}) {
 		obj := respObj.(map[string]interface{})[key]
+		if obj == nil {
+			return false
+		}
 		fmt.Println(key, reflect.TypeOf(value), obj)
 
 		val := value.(map[string]interface{})["Contains"]
 		if val != nil {
-			bodyContains(value, obj)
+			if bodyContains(value, obj) == false {
+				return false
+			}
 		} else {
-			objChecks(value, obj)
+			if objChecks(value, obj) == false {
+				return false
+			}
 		}
 
 	}
+	return true
 }
 
-func Equal[T int | string](yml T, resp T) {
-	fmt.Println("equal", yml, resp)
+func Equal[T int | string](yml T, resp T) bool {
+	//fmt.Println("equal", yml, resp)
 	if yml == resp {
-		fmt.Println("true")
+		return true
 	}
+	return false
 }
 
 func ResponcetoObject(resp *http.Response) interface{} {
@@ -207,16 +241,17 @@ func ResponcetoObject(resp *http.Response) interface{} {
 	return responceObj
 }
 
-func objChecks(ymlval interface{}, resobj interface{}) {
+func objChecks(ymlval interface{}, resobj interface{}) bool {
 
 	val := ymlval.(map[string]interface{})["Equal"]
 	if val != nil {
-		Equal(val.(string), resobj.(string))
+		return Equal(val.(string), resobj.(string))
 	}
+	return true
 }
 
-func ListChecks(ymlval interface{}, resobj interface{}) {
+func ListChecks(ymlval interface{}, resobj interface{}) bool {
 
-	Equal(ymlval.(string), resobj.(string))
+	return Equal(ymlval.(string), resobj.(string))
 
 }
