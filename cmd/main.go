@@ -1,41 +1,19 @@
 package main
 
 import (
+	"Mach/pkg/ReadFiles"
 	"Mach/pkg/Request"
 	"Mach/pkg/Response"
 	"fmt"
-	"io/ioutil"
-
-	"gopkg.in/yaml.v3"
 )
 
 func main() {
 	// test.read yml
 
-	buf := readFile()
-	//Map the read file[interface {}]interface {}Map to
-	t := mapYmltoInterface(buf)
+	t := ReadFiles.ReadYml()
 
 	performMach(t)
 
-}
-
-func readFile() []byte {
-	buf, err := ioutil.ReadFile("Apitest.yml")
-	if err != nil {
-		fmt.Print("error: Failed to read the file\n")
-		return nil
-	}
-	return buf
-}
-
-func mapYmltoInterface(buf []byte) map[interface{}]interface{} {
-	t := make(map[interface{}]interface{})
-	err := yaml.Unmarshal(buf, &t)
-	if err != nil {
-		panic(err)
-	}
-	return t
 }
 
 func performMach(t map[interface{}]interface{}) {
