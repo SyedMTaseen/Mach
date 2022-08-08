@@ -1,5 +1,5 @@
 ---
-APITESTING:
+Mach:
   NAME: UserDetails
   RequestURL: "https://api.test.com/api/user/{{UUID}}/Details"
   HTTP-method: GET

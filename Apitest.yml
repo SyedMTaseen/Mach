@@ -1,5 +1,5 @@
 
-APITESTING:
+Mach:
   Name: UserDetails
   RequestURL: "https://mocki.io/v1/d4867d8b-b5d5-4a48-a4ab-79131b5809b8"
   HTTP-method: GET
@@ -13,7 +13,7 @@ APITESTING:
       # Header :
       #     Content-Type : application/json
     Responces :
-      StatusCode: 200
+      StatusCode: 400
       Body:
         Contains:
           Type: List
