@@ -10,9 +10,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func ReadYml() {
+func ReadYml(testCasesPath string) {
 
-	for _, s := range find("/workspaces/Mach/testcase", ".yml") {
+	for _, s := range find(testCasesPath, ".yml") {
 		buf := readFile(s)
 		interf := mapYmltoInterface(buf)
 		macher.PerformMach(interf)
