@@ -1,7 +1,7 @@
 package ReadFiles
 
 import (
-	"fmt"
+	"Mach/pkg/Logger"
 	"io/ioutil"
 
 	"gopkg.in/yaml.v3"
@@ -16,7 +16,7 @@ func ReadYml() map[interface{}]interface{} {
 func readFile() []byte {
 	buf, err := ioutil.ReadFile("/workspaces/Mach/Apitest.yml")
 	if err != nil {
-		fmt.Print("error: Failed to read the file\n")
+		Logger.ErrorLogger.Println("error: Failed to read the file\n" + ":" + err.Error())
 		return nil
 	}
 	return buf

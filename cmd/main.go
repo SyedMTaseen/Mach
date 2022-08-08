@@ -33,22 +33,12 @@ func performMach(t map[interface{}]interface{}) {
 
 		responce := Request.Request(testcase, RequestURL, HTTPmethods)
 
-		//fmt.Print(RequestURL)
 		fmt.Println(responce.StatusCode)
-		// vars, err := respObj.(map[string]interface{})["city"]
-		// if err == true {
-		// 	fmt.Print("error")
-		// }
 
 		result := Response.ResponceMain(testcase, responce)
 
 		fmt.Println(result)
-		//
-		//Responces := testcase.(map[string]interface{})["Responces"]
-		// fmt.Println(Responces)
 
 	}
-
-	//fmt.Print(RequestURL)
 
 }

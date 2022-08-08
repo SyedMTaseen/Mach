@@ -1,11 +1,10 @@
 package Response
 
 import (
+	"Mach/pkg/Logger"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"reflect"
 )
 
 // Test us the result of Testcases
@@ -31,7 +30,6 @@ func ResponceMain(testcase interface{}, responce *http.Response) *TestCaseResult
 	}
 	Body := Responces.(map[string]interface{})["Body"]
 	respObj := ResponcetoObject(responce)
-	fmt.Println(reflect.TypeOf(respObj.([]interface{})[0]))
 	return bodyContains(Body.(map[string]interface{})["Contains"], respObj)
 
 }
@@ -88,7 +86,6 @@ func list(Contains interface{}, respObj interface{}) *TestCaseResult {
 
 func listValue(InType interface{}, respObj interface{}) *TestCaseResult {
 	intype := InType.([]interface{})[0]
-	//fmt.Println(intype)
 
 	for key, value := range intype.(map[interface{}]interface{}) {
 		if len(intype.(map[interface{}]interface{})) < key.(int) {
@@ -100,14 +97,14 @@ func listValue(InType interface{}, respObj interface{}) *TestCaseResult {
 		}
 		switch value.(type) {
 		case map[string]interface{}:
-			fmt.Println(key, reflect.TypeOf(value))
+
 			res := bodyContains(value.(map[string]interface{})["Contains"], obj)
 			if !res.Result {
 				return res
 			}
-			//fmt.Println("Integer:", value.(map[string]interface{})["Contains"])
+
 		default:
-			fmt.Println(key, reflect.TypeOf(value))
+
 			if !ListChecks(value, obj) {
 				return newTestCaseResult("List item not matched", false)
 			}
@@ -127,7 +124,6 @@ func object(Contains interface{}, respObj interface{}) *TestCaseResult {
 	}
 	InType := Contains.(map[string]interface{})["InType"]
 
-	//fmt.Println(InType)
 	if InType != nil {
 		return objValue(InType, respObj)
 	}
@@ -136,14 +132,12 @@ func object(Contains interface{}, respObj interface{}) *TestCaseResult {
 
 func objValue(InType interface{}, respObj interface{}) *TestCaseResult {
 	intype := InType.([]interface{})[0]
-	//fmt.Println(intype)
 
 	for key, value := range intype.(map[string]interface{}) {
 		obj := respObj.(map[string]interface{})[key]
 		if obj == nil {
 			return newTestCaseResult("Object item not found", false)
 		}
-		fmt.Println(key, reflect.TypeOf(value), obj)
 
 		val := value.(map[string]interface{})["Contains"]
 		if val != nil {
@@ -162,20 +156,19 @@ func objValue(InType interface{}, respObj interface{}) *TestCaseResult {
 }
 
 func Equal[T int | string](yml T, resp T) bool {
-	//fmt.Println("equal", yml, resp)
+
 	return yml == resp
 }
 
 func ResponcetoObject(resp *http.Response) interface{} {
 
-	// fmt.Println(res.Status)
 	defer resp.Body.Close()
 	resbody, _ := ioutil.ReadAll(resp.Body)
 
 	var responceObj interface{}
 	err := json.Unmarshal(resbody, &responceObj)
 	if err != nil {
-		fmt.Println(err)
+		Logger.ErrorLogger.Println(err)
 	}
 	return responceObj
 }

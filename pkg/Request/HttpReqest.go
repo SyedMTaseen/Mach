@@ -2,7 +2,6 @@ package Request
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"strings"
 )
@@ -10,9 +9,7 @@ import (
 func Request(testcase interface{}, RequestURL interface{}, HTTPmethods string) *http.Response {
 	Request := testcase.(map[string]interface{})["Request"]
 	url := AddParams(RequestURL.(string), Request)
-	fmt.Println(url)
 	Body := GetBody(Request)
-	fmt.Println(Body)
 
 	responce := RESTRequest(Request, HTTPmethods, url, Body)
 
@@ -34,7 +31,6 @@ func AddParams(RequestUrl string, Request interface{}) string {
 		} else {
 			endprams += key + "=" + value.(string)
 		}
-		//fmt.Println(key, value)
 	}
 	if endprams != "" {
 		requestUrl += "?" + endprams
@@ -57,7 +53,6 @@ func AddHeader(Request interface{}, req *http.Request) *http.Request {
 		header := Header.([]interface{})[0]
 		for key, value := range header.(map[string]interface{}) {
 			req.Header.Add(key, value.(string))
-			//fmt.Println(key, value)
 		}
 	}
 	return req
