@@ -2,19 +2,25 @@ package ReadFiles
 
 import (
 	"Mach/pkg/Logger"
+	"Mach/pkg/macher"
+	"io/fs"
 	"io/ioutil"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
 
-func ReadYml() map[interface{}]interface{} {
-	buf := readFile()
-	//Map the read file[interface {}]interface {}Map to
-	return mapYmltoInterface(buf)
+func ReadYml() {
+
+	for _, s := range find("/workspaces/Mach/testcase", ".yml") {
+		buf := readFile(s)
+		interf := mapYmltoInterface(buf)
+		macher.PerformMach(interf)
+	}
 }
 
-func readFile() []byte {
-	buf, err := ioutil.ReadFile("/workspaces/Mach/Apitest.yml")
+func readFile(path string) []byte {
+	buf, err := ioutil.ReadFile(path)
 	if err != nil {
 		Logger.ErrorLogger.Println("error: Failed to read the file\n" + ":" + err.Error())
 		return nil
@@ -29,4 +35,18 @@ func mapYmltoInterface(buf []byte) map[interface{}]interface{} {
 		panic(err)
 	}
 	return t
+}
+
+func find(root, ext string) []string {
+	var a []string
+	filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
+		if e != nil {
+			return e
+		}
+		if filepath.Ext(d.Name()) == ext {
+			a = append(a, s)
+		}
+		return nil
+	})
+	return a
 }
