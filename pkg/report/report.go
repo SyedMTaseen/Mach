@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"html/template"
 	"os"
-	"time"
 )
 
 type Result struct {
@@ -34,14 +33,14 @@ type Report struct {
 
 func CreateReport(report Report) {
 
-	tmpl := template.Must(template.ParseFiles("././templates/report.gohtml"))
+	tmpl := template.Must(template.ParseFiles("templates/report.gohtml"))
 
 	var processed bytes.Buffer
 	tmpl.Execute(&processed, report)
 
-	currentTime := time.Now()
+	//currentTime := time.Now().Format("yyyy-MM-dd'T'HH:mm:ss")
 
-	outputPath := "././reports/Report " + currentTime.Format("01-02-2006 15:04:05 Monday") + ".html"
+	outputPath := "reports/Report.html "
 	f, _ := os.Create(outputPath)
 	w := bufio.NewWriter(f)
 	w.WriteString(processed.String())
