@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	// test.read yml
+
+	//test.read yml
 
 	getCmd := flag.NewFlagSet("test", flag.ExitOnError)
 	getpath := getCmd.String("path", "", "testcases path")
@@ -22,11 +23,16 @@ func main() {
 	switch os.Args[1] {
 	case "test": // if its the 'get' command
 		HandleTest(getCmd, getpath)
+	case "-version": // if its the 'get' command
+		fmt.Println("v0.1.1")
+	case "-help": // if its the 'get' command
+		fmt.Println("")
+		fmt.Println("Usage : mach test -path /path/to/the/testcases/")
 	default:
-		fmt.Println("Error not a valid command") // if we don't understand the input
+		fmt.Println("Error not a valid command user -help for more info") // if we don't understand the input
 	}
 
-	// performMach(t)
+	//performMach(t)
 
 }
 
