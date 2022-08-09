@@ -3,20 +3,29 @@ package readFiles
 import (
 	"Mach/pkg/logger"
 	"Mach/pkg/macher"
+	"Mach/pkg/report"
 	"io/fs"
 	"io/ioutil"
 	"path/filepath"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
 
 func ReadYml(testCasesPath string) {
 
+	var reports report.Report
+	currentTime := time.Now()
+	reports.ReportDate = currentTime.Format("01-02-2006 15:04:05 Monday")
 	for _, s := range find(testCasesPath, ".yml") {
 		buf := readFile(s)
 		interf := mapYmltoInterface(buf)
-		macher.PerformMach(interf)
+		tests := macher.PerformMach(interf)
+		reports.Tests = append(reports.Tests, tests)
 	}
+
+	report.CreateReport(reports)
+
 }
 
 func readFile(path string) []byte {
