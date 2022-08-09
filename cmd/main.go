@@ -28,6 +28,7 @@ func main() {
 	case "-help": // if its the 'get' command
 		fmt.Println("")
 		fmt.Println("Usage : mach test -path /path/to/the/testcases/")
+		fmt.Println("")
 	default:
 		fmt.Println("Error not a valid command user -help for more info") // if we don't understand the input
 	}
