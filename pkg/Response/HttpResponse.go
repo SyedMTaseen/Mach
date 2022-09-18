@@ -85,10 +85,10 @@ func list(Contains interface{}, respObj interface{}) *TestCaseResult {
 }
 
 func listValue(InType interface{}, respObj interface{}) *TestCaseResult {
-	intype := InType.([]interface{})[0]
+	//intype := InType.([]interface{})[0]
 
-	for key, value := range intype.(map[interface{}]interface{}) {
-		if len(intype.(map[interface{}]interface{})) < key.(int) {
+	for key, value := range InType.(map[interface{}]interface{}) {
+		if len(InType.(map[interface{}]interface{})) < key.(int) {
 			return newTestCaseResult("List item not found", false)
 		}
 		obj := respObj.([]interface{})[key.(int)]
@@ -131,9 +131,9 @@ func object(Contains interface{}, respObj interface{}) *TestCaseResult {
 }
 
 func objValue(InType interface{}, respObj interface{}) *TestCaseResult {
-	intype := InType.([]interface{})[0]
+	//intype := InType.([]interface{})[0]
 
-	for key, value := range intype.(map[string]interface{}) {
+	for key, value := range InType.(map[string]interface{}) {
 		obj := respObj.(map[string]interface{})[key]
 		if obj == nil {
 			return newTestCaseResult("Object item not found", false)

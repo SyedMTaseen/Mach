@@ -22,10 +22,10 @@ func AddParams(RequestUrl string, Request interface{}) string {
 	if Params == nil {
 		return RequestUrl
 	}
-	parms := Params.([]interface{})[0]
+	//parms := Params.([]interface{})[0]
 	requestUrl := RequestUrl
 	endprams := ""
-	for key, value := range parms.(map[string]interface{}) {
+	for key, value := range Params.(map[string]interface{}) {
 		if strings.Contains(requestUrl, "{{"+key+"}}") {
 			requestUrl = strings.ReplaceAll(requestUrl, "{{"+key+"}}", value.(string))
 		} else {

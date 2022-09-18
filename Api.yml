@@ -7,10 +7,10 @@ Mach:
   - Name : Basic testing
     Request :
       Params :
-        - UUID: 4a52adee-ee22-41dc-b947-59c938e4cb3b
+        UUID: 4a52adee-ee22-41dc-b947-59c938e4cb3b
       Body : "{}"
       Header :
-        - Auth : 4d52edea-ee22-41dc-b947-59c948e4cb3b
+        Auth : 4d52edea-ee22-41dc-b947-59c948e4cb3b
     Responces :
       StatusCode: 200
       Body:
@@ -19,7 +19,7 @@ Mach:
           Lenght : 
               Equal : 1
           InType:
-          - 0 : BOB
+            0 : BOB
             1 : BOB@email.com
             2 : 
               Contains :   
@@ -27,10 +27,14 @@ Mach:
                 Lenght:
                   Equal : 1   
                 InType:
-                - UserAge :
+                  UserAge :
                     Equal : 18
-                    InRange : [18,25] 
+                    # InRange : [18,25] 
                   PhoneList :
                     Contains :
                       Type : List    
+                      Lenght : 
+                          Equal : 1
+                      InType:
+                        0 : 03218923255
            
